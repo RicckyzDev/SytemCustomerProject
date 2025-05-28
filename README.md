@@ -15,7 +15,7 @@ Sistema básico de gestão de clientes desenvolvido em **Spring Boot**, com foco
 - **Interface web de exemplo com Thymeleaf**
   - Uma tela HTML de exemplificação do CRUD, para visualizar, cadastrar e editar clientes diretamente pelo navegador, utilizando o motor de templates Thymeleaf.
 - **Arquitetura organizada**
-  - Separação em pacotes: `controller`, `dto`, `entity`, `repository`, `service`, `usecase`.
+  - Separação em pacotes: `controller`, `dto`, `model`, `repository`, `service`, `usecase`.
 - **Banco de dados em memória H2**
   - Não é necessário instalar nenhum banco adicional para testar; o H2 é inicializado automaticamente, facilitando o desenvolvimento e testes locais.
 - **Documentação interativa da API com Swagger UI**
