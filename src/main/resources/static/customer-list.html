@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Clientes</title>
+</head>
+<body style="background:#f6f8fa;font-family:sans-serif;margin:0;padding:0;">
+<div style="background:#204080;color:white;padding:24px 0;margin-bottom:32px;box-shadow:0 2px 8px #0002;">
+    <h1 style="margin:0;text-align:center;">Sistema de Clientes</h1>
+    <p style="margin:0;text-align:center;">Projeto desenvolvido para cadeira de Backend-Frameworks</p>
+</div>
+<div style="max-width:900px;background:white;margin:0 auto 40px auto;padding:32px 28px 28px 28px;border-radius:10px;box-shadow:0 2px 16px #20408022;">
+    <h2 style="color:#204080;text-align:left;margin-top:0;">Clientes</h2>
+    <a href="customer-form.html" style="background: #1a73e8; color:white; padding: 8px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 15px; box-shadow: 0 2px 4px #0001;">+ Novo Cliente</a>
+    <br><br>
+    <table id="customers-table" style="width:100%;border-collapse:collapse;font-size:16px;">
+        <thead>
+        <tr style="background:#e3eafc;">
+            <th style="padding:12px 6px;border-bottom:2px solid #20408044;">ID</th>
+            <th style="padding:12px 6px;border-bottom:2px solid #20408044;">Nome</th>
+            <th style="padding:12px 6px;border-bottom:2px solid #20408044;">E-mail</th>
+            <th style="padding:12px 6px;border-bottom:2px solid #20408044;">Telefone</th>
+            <th style="padding:12px 6px;border-bottom:2px solid #20408044;">Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <p id="vazio" style="text-align:center;color:#999;margin-top:28px;display:none;">Nenhum cliente cadastrado.</p>
+    <div style="color:#ddd;font-size:11px;margin-top:40px;">Documentação: Swagger UI • Banco: H2 • Lombok • Validação: Jakarta</div>
+</div>
+
+<!-- Modal de confirmação -->
+<div id="modal-backdrop" style="display:none; position:fixed; z-index:99; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.22);"></div>
+<div id="modal-confirm" style="display:none; position:fixed; z-index:100; left:50%; top:50%; transform:translate(-50%,-50%); background:white; border-radius:10px; box-shadow:0 4px 20px #0004; padding:32px 32px 24px 32px; min-width:350px; text-align:center;">
+    <div style="font-size:1.1em; color:#204080; margin-bottom:26px;">
+        <b>Tem certeza que deseja excluir este cliente?</b>
+    </div>
+    <button id="modal-btn-cancel" style="background:#eee;color:#204080;padding:8px 30px;border:none;border-radius:5px;font-weight:bold;margin-right:14px;cursor:pointer;">Cancelar</button>
+    <button id="modal-btn-confirm" style="background:#c91d1d;color:white;padding:8px 32px;border:none;border-radius:5px;font-weight:bold;box-shadow:0 2px 4px #0002;cursor:pointer;">Excluir</button>
+</div>
+
+<script>
+    let deleteId = null;
+
+    function loadCustomers() {
+        fetch('/api/customers')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector("#customers-table tbody");
+                const vazio = document.getElementById('vazio');
+                tbody.innerHTML = '';
+                if(data.length === 0) {
+                    vazio.style.display = 'block';
+                    return;
+                }
+                vazio.style.display = 'none';
+                data.forEach(customer => {
+                    tbody.innerHTML += `
+        <tr>
+            <td style="padding:8px 4px;text-align:center;">${customer.id}</td>
+            <td style="padding:8px 4px;">${customer.name}</td>
+            <td style="padding:8px 4px;">${customer.email}</td>
+            <td style="padding:8px 4px;">${customer.phone || ''}</td>
+            <td style="padding:8px 4px;text-align:center;">
+                <a href="customer-form.html?id=${customer.id}" style="color:#204080;font-weight:bold;text-decoration:none;margin-right:8px;">Editar</a>
+                <button onclick="openModal(${customer.id})" style="background:#c91d1d;color:white;padding:4px 10px;border:none;border-radius:4px;cursor:pointer;">Excluir</button>
+            </td>
+        </tr>`;
+                });
+            });
+    }
+
+    function openModal(id) {
+        deleteId = id;
+        document.getElementById('modal-backdrop').style.display = 'block';
+        document.getElementById('modal-confirm').style.display = 'block';
+    }
+
+    function closeModal() {
+        deleteId = null;
+        document.getElementById('modal-backdrop').style.display = 'none';
+        document.getElementById('modal-confirm').style.display = 'none';
+    }
+
+    document.getElementById("modal-btn-cancel").onclick = closeModal;
+
+    document.getElementById("modal-btn-confirm").onclick = function() {
+        if (deleteId !== null) {
+            fetch('/api/customers/' + deleteId, { method: 'DELETE' })
+                .then(response => {
+                    closeModal();
+                    if (response.ok) {
+                        loadCustomers();
+                    } else {
+                        alert("Erro ao excluir.");
+                    }
+                });
+        }
+    };
+
+    document.getElementById('modal-backdrop').onclick = closeModal;
+
+    window.onload = loadCustomers;
+</script>
+</body>
+</html>

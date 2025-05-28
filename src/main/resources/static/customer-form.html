@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Cliente</title>
+</head>
+<body style="background:#f6f8fa;font-family:sans-serif;margin:0;padding:0;">
+<div style="background:#204080;color:white;padding:24px 0;margin-bottom:32px;box-shadow:0 2px 8px #0002;">
+    <h1 style="margin:0;text-align:center;">Sistema de Clientes</h1>
+    <p style="margin:0;text-align:center;">Projeto desenvolvido para cadeira de Backend-Frameworks</p>
+</div>
+<div style="max-width:520px;background:white;margin:0 auto 40px auto;padding:28px 24px 18px 24px;border-radius:10px;box-shadow:0 2px 16px #20408022;">
+    <h2 id="form-title" style="color:#204080;text-align:left;margin-top:0;font-size:1.3em;">Novo Cliente</h2>
+    <form id="customerForm">
+        <input type="hidden" id="id">
+
+        <label for="name" style="color:#204080;">Nome:</label>
+        <input type="text" id="name" required style="width:100%;padding:8px;border-radius:4px;border:1px solid #ccc;margin-bottom:14px;">
+
+        <label for="email" style="color:#204080;">E-mail:</label>
+        <input type="email" id="email" required style="width:100%;padding:8px;border-radius:4px;border:1px solid #ccc;margin-bottom:14px;">
+
+        <label for="phone" style="color:#204080;">Telefone:</label>
+        <input type="text" id="phone" style="width:100%;padding:8px;border-radius:4px;border:1px solid #ccc;margin-bottom:24px;">
+
+        <button type="submit" style="background:#204080;color:white;border:none;padding:10px 32px;border-radius:6px;cursor:pointer;font-size:17px;margin-right:10px;font-weight:bold;box-shadow:0 2px 4px #0002;">Salvar</button>
+        <a href="customer-list.html" style="background:#eee;color:#204080;padding:10px 28px;text-decoration:none;border-radius:5px;font-weight:bold;">Cancelar</a>
+    </form>
+</div>
+<script>
+    function getParam(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+    }
+
+    window.onload = function() {
+        const id = getParam('id');
+        if (id) {
+            document.getElementById('form-title').innerText = 'Editar Cliente';
+            fetch("/api/customers/" + id)
+                .then(res => res.json())
+                .then(customer => {
+                    document.getElementById('id').value = customer.id;
+                    document.getElementById('name').value = customer.name;
+                    document.getElementById('email').value = customer.email;
+                    document.getElementById('phone').value = customer.phone || '';
+                });
+        }
+    };
+
+    document.getElementById('customerForm').onsubmit = function(e) {
+        e.preventDefault();
+        const id = document.getElementById('id').value;
+        const customer = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value
+        };
+
+        let method, url;
+        if (id) {
+            method = 'PUT';
+            url = '/api/customers/' + id;
+        } else {
+            method = 'POST';
+            url = '/api/customers';
+        }
+
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(customer)
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "customer-list.html";
+                } else {
+                    response.json().then(data => alert(data.message || 'Erro'));
+                }
+            });
+    }
+</script>
+</body>
+</html>
