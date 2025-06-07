@@ -100,4 +100,4 @@ Sistema básico de gestão de clientes desenvolvido em **Spring Boot**, com foco
 **Resumo:**  
 Basta rodar o projeto e acessar a tela web para testar o CRUD de clientes, além de poder usar o Swagger UI para testar os endpoints facilmente, ou utilizar o console H2 para inspecionar o banco de dados em tempo real. Não é necessário configurar nenhum software extra para testes locais.
 
-Se precisar de mais algum detalhe ou um exemplo de uso dos endpoints, ou da tela web com Thymeleaf, é só me chamar!
+Se precisar de mais algum detalhe ou um exemplo de uso dos endpoints, ou da tela web com Thymeleaf, é só me chamar! [AQUI](https://github.com/RicckyzDev/SytemCustomerProject/issues)
